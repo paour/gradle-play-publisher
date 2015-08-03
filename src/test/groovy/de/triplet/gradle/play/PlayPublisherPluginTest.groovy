@@ -131,4 +131,34 @@ class PlayPublisherPluginTest {
         }
     }
 
+    @Test
+    public void testPlaySigningConfigs() {
+        Project project = TestHelper.evaluatableProject()
+
+        project.android {
+            playAccountConfigs {
+                free {
+                    serviceAccountEmail = 'first-mail@exmaple.com'
+                    pk12File = project.file('secret.pk12')
+                }
+                paid {
+                    serviceAccountEmail = 'another-mail@exmaple.com'
+                    pk12File = project.file('another-secret.pk12')
+                }
+            }
+
+            productFlavors {
+                free {
+                    // fails with a MissingPropertyException: "Could not find property 'playAccountConfigs' on ProductFlavor_Decorated"
+                    playAccountConfig playAccountConfigs.free
+                }
+                paid {
+                    playAccountConfig playAccountConfigs.paid
+                }
+            }
+        }
+
+        project.evaluate()
+    }
+
 }

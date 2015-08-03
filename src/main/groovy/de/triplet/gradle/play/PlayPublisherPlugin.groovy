@@ -1,13 +1,17 @@
 package de.triplet.gradle.play
 
+import com.android.build.gradle.AppExtension
 import com.android.build.gradle.AppPlugin
 import org.apache.commons.lang.StringUtils
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.internal.ClosureBackedAction
 
 class PlayPublisherPlugin implements Plugin<Project> {
 
     public static final String PLAY_STORE_GROUP = "Play Store"
+
+    final Map<String, PlayAccountConfig> playAccountConfigs = [:]
 
     @Override
     void apply(Project project) {
@@ -16,6 +20,15 @@ class PlayPublisherPlugin implements Plugin<Project> {
         def hasAppPlugin = project.plugins.find { p -> p instanceof AppPlugin }
         if (!hasAppPlugin) {
             throw new IllegalStateException("The 'com.android.application' plugin is required.")
+        }
+
+        def playAccountConfigsContainer = project.container(PlayAccountConfig)
+        playAccountConfigsContainer.whenObjectAdded { config ->
+            playAccountConfigs[config.name] = config
+        }
+
+        AppExtension.metaClass.playAccountConfigs << { closure ->
+            ClosureBackedAction.of(closure).execute(playAccountConfigsContainer)
         }
 
         def extension = project.extensions.create('play', PlayPublisherPluginExtension)
