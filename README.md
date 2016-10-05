@@ -2,8 +2,6 @@
 
 Gradle plugin to upload your APK and app details to the Google Play Store. Needs the ```com.android.application``` plugin applied. Supports the Android Application Plugin as of version ```1.0.0```.
 
-[![Build Status](https://travis-ci.org/Triple-T/gradle-play-publisher.svg?branch=master)](https://travis-ci.org/Triple-T/gradle-play-publisher)
-
 ## Quick Start Guide
 
 1. Upload the first version of your APK using the web interface.
@@ -41,12 +39,12 @@ Add it to your buildscript dependencies:
 buildscript {
 
     repositories {
-        mavenCentral()
+        maven { url 'https://maven.siruplab.com/public' }
     }
 
     dependencies {
     	// ...
-        classpath 'com.github.triplet.gradle:play-publisher:1.1.4'
+        classpath 'com.siruplab.gradle:play-publisher:1.1.6'
     }
 }
 ```
@@ -54,7 +52,7 @@ buildscript {
 Apply it:
 
 ```groovy
-apply plugin: 'com.github.triplet.play'
+apply plugin: 'com.siruplab.play'
 ```
 
 The plugin creates the following tasks for you:
@@ -148,7 +146,7 @@ To make sure your texts comply to the requirements of the Play Store, there is a
 
 The limits are:
 
-* Title: *90 characters*
+* Title: *30 characters*
 * Short description: *80 characters*
 * Long description: *4000 characters*
 * Recent changes : *500 characters*
@@ -223,7 +221,21 @@ In that case the plugin looks for the Play Store images in your `play` folder. S
 
 Note: The plugin does not enforce the correct size and file type. If you try to upload invalid files, the Google API will fail with a detailed error message.
 
-Note: The plugin copies and merges the contents of the different play folders into a build folder for upload. If there are still images left from a previous build, this might lead to undesired behaviour. Pleas make sure to always do a `./gradlew clean` whenever you rename or delete images in those directories.
+Note: The plugin copies and merges the contents of the different play folders into a build folder for upload. If there are still images left from a previous build, this might lead to undesired behaviour. Please make sure to always do a `./gradlew clean` whenever you rename or delete images in those directories.
+
+### Upload Obb file
+
+The `publishObb` task requires that you place the obb main and/or patch file into the `play/obb` directory, with the name `obb` and `patch`.
+
+You can can select whether to upload the main and patch files in the `play` extension (by default only the main is uploaded):
+
+```groovy
+play {
+    // ...
+    uploadObbMain = true
+    uploadObbPatch = false
+}
+```
 
 ## Advanced Topics
 
@@ -244,3 +256,9 @@ project.afterEvaluate {
 ```
 
 Note that we have to wait for the evaluation phase to complete before the `generateReleasePlayResources` task becomes visible.
+
+## Troubleshooting
+
+If your build fails in the console with a message like `javax.net.ssl.SSLPeerUnverifiedException: peer not authenticated`, check that you're running a version of Java later than 1.8.0_101. Earlier versions [do not support Let's Encrypt certs](https://community.letsencrypt.org/t/which-browsers-and-operating-systems-support-lets-encrypt/4394?u=mrtux).
+
+In Android Studio/IntelliJ, the error message may be different, but amounts to an unrecognized server certificate.
