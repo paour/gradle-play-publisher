@@ -2,8 +2,6 @@
 
 Gradle plugin to upload your APK and app details to the Google Play Store. Needs the ```com.android.application``` plugin applied. Supports the Android Application Plugin as of version ```1.0.0```.
 
-[![Build Status](https://travis-ci.org/Triple-T/gradle-play-publisher.svg?branch=master)](https://travis-ci.org/Triple-T/gradle-play-publisher)
-
 ## Quick Start Guide
 
 1. Upload the first version of your APK using the web interface.
@@ -41,12 +39,12 @@ Add it to your buildscript dependencies:
 buildscript {
 
     repositories {
-        mavenCentral()
+        maven { url 'https://maven.siruplab.com/public' }
     }
 
     dependencies {
     	// ...
-        classpath 'com.github.triplet.gradle:play-publisher:1.1.5'
+        classpath 'com.siruplab.gradle:play-publisher:1.1.6'
     }
 }
 ```
@@ -54,7 +52,7 @@ buildscript {
 Apply it:
 
 ```groovy
-apply plugin: 'com.github.triplet.play'
+apply plugin: 'com.siruplab.play'
 ```
 
 The plugin creates the following tasks for you:
@@ -258,3 +256,9 @@ project.afterEvaluate {
 ```
 
 Note that we have to wait for the evaluation phase to complete before the `generateReleasePlayResources` task becomes visible.
+
+## Troubleshooting
+
+If your build fails in the console with a message like `javax.net.ssl.SSLPeerUnverifiedException: peer not authenticated`, check that you're running a version of Java later than 1.8.0_101. Earlier versions [do not support Let's Encrypt certs](https://community.letsencrypt.org/t/which-browsers-and-operating-systems-support-lets-encrypt/4394?u=mrtux).
+
+In Android Studio/IntelliJ, the error message may be different, but amounts to an unrecognized server certificate.
