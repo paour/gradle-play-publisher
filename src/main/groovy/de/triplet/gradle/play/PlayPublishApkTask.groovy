@@ -99,7 +99,6 @@ class PlayPublishApkTask extends PlayPublishTask {
             associateObb("patch", extension.associateObbPatch)
         }
 
-        edits.commit(variant.applicationId, editId).execute()
         return apk
     }
 
