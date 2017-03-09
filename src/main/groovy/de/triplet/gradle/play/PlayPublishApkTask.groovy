@@ -64,6 +64,12 @@ class PlayPublishApkTask extends PlayPublishTask {
             }
         }
 
+        //Upload Proguard mapping.txt if available
+        if (variant.mappingFile?.exists()) {
+            def fileStream = new FileContent('application/octet-stream', variant.mappingFile)
+            edits.deobfuscationfiles().upload(variant.applicationId, editId, apk.getVersionCode(), 'proguard', fileStream).execute()
+        }
+
         if (inputFolder.exists()) {
 
             // Matches if locale have the correct naming e.g. en-US for play store
