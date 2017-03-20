@@ -27,6 +27,10 @@ public class DependsOn extends TypeSafeMatcher<Task> {
                 if ( ((Task)o).name == mDependsOn ) {
                     return true
                 }
+            } else if (String.class.isAssignableFrom(o.class)) {
+                if (((String) o) == mDependsOn) {
+                    return true
+                }
             }
         }
 
