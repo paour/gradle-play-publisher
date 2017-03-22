@@ -82,7 +82,7 @@ class PlayPublishApkTask extends PlayPublishTask {
 
                 if (whatsNewFile.exists()) {
 
-                    def whatsNewText = TaskHelper.readAndTrimFile(whatsNewFile, MAX_CHARACTER_LENGTH_FOR_WHATS_NEW_TEXT, extension.errorOnSizeLimit)
+                    def whatsNewText = TaskHelper.readAndTrimFile(project, whatsNewFile, MAX_CHARACTER_LENGTH_FOR_WHATS_NEW_TEXT, extension.errorOnSizeLimit)
                     def locale = dir.name
 
                     ApkListing newApkListing = new ApkListing().setRecentChanges(whatsNewText)

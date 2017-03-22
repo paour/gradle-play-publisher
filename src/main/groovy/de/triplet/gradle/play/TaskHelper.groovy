@@ -2,16 +2,19 @@ package de.triplet.gradle.play
 
 import com.google.api.client.http.AbstractInputStreamContent
 import com.google.api.client.http.FileContent
+import org.gradle.api.Project
 
 class TaskHelper {
 
-    def static readAndTrimFile(File file, int maxCharLength, boolean errorOnSizeLimit) {
+    def static readAndTrimFile(Project project, File file, int maxCharLength, boolean errorOnSizeLimit) {
         if (file.exists()) {
             def message = normalize(file.text)
 
             if (message.length() > maxCharLength) {
                 if (errorOnSizeLimit) {
-                    throw new LimitExceededException(file, maxCharLength)
+                    def resourcesOutput = project.file(PlayPublisherPlugin.RESOURCES_OUTPUT_PATH)
+                    def relativePath = resourcesOutput.toURI().relativize(file.toURI())
+                    throw new IllegalArgumentException("File '${relativePath}' has reached the limit of ${maxCharLength} characters")
                 }
 
                 return message.substring(0, maxCharLength)
