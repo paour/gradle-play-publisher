@@ -39,9 +39,9 @@ class PlayPublishApkTask extends PlayPublishTask {
         edits.commit(variant.applicationId, editId).execute()
     }
 
-    def Apk publishApk(apkFile) {
+    Apk publishApk(apkFile) {
 
-        Apk apk = edits.apks()
+        def apk = edits.apks()
                 .upload(variant.applicationId, editId, apkFile)
                 .execute()
 
@@ -52,19 +52,19 @@ class PlayPublishApkTask extends PlayPublishTask {
                     Track track = edits.tracks().get(variant.applicationId, editId, channel).execute()
                     track.setVersionCodes(track.getVersionCodes().findAll {
                         it > apk.getVersionCode()
-                    });
+                    })
 
                     edits.tracks().update(variant.applicationId, editId, channel, track).execute()
                 } catch (GoogleJsonResponseException e) {
                     // Just skip if there is no version in track
                     if (e.details.getCode() != 404) {
-                        throw e;
+                        throw e
                     }
                 }
             }
         }
 
-        //Upload Proguard mapping.txt if available
+        // Upload Proguard mapping.txt if available
         if (variant.mappingFile?.exists()) {
             def fileStream = new FileContent('application/octet-stream', variant.mappingFile)
             edits.deobfuscationfiles().upload(variant.applicationId, editId, apk.getVersionCode(), 'proguard', fileStream).execute()
