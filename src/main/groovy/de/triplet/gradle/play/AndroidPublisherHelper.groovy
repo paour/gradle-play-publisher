@@ -19,6 +19,8 @@ import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.HttpRequest
+import com.google.api.client.http.HttpRequestInitializer
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.androidpublisher.AndroidPublisher;
@@ -88,6 +90,17 @@ public class AndroidPublisherHelper {
         return credential.createScoped(Collections.singleton(AndroidPublisherScopes.ANDROIDPUBLISHER));
     }
 
+    private static HttpRequestInitializer setHttpTimeout(final HttpRequestInitializer requestInitializer, int timeout) {
+        return new HttpRequestInitializer() {
+            @Override
+            public void initialize(HttpRequest httpRequest) throws IOException {
+                requestInitializer.initialize(httpRequest);
+                httpRequest.setConnectTimeout(timeout);  // 3 minutes connect timeout
+                httpRequest.setReadTimeout(timeout);  // 3 minutes read timeout
+            }
+        };
+    }
+
     /**
      * Performs all necessary setup steps for running requests against the API.
      *
@@ -105,7 +118,7 @@ public class AndroidPublisherHelper {
         Credential credential = authorizeWithServiceAccount(extension);
 
         // Set up and return API client.
-        return new AndroidPublisher.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
+        return new AndroidPublisher.Builder(HTTP_TRANSPORT, JSON_FACTORY, setHttpTimeout(credential, extension.timeout))
                 .setApplicationName(APPLICATION_NAME)
                 .build();
     }
