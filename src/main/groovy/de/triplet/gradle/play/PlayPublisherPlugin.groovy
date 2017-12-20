@@ -19,7 +19,7 @@ class PlayPublisherPlugin implements Plugin<Project> {
 
         def extension = project.extensions.create('play', PlayPublisherPluginExtension)
 
-        project.android.extensions.playAccountConfigs = project.container(PlayAccountConfig)
+        project.android.extensions.playAccountConfig = project.container(PlayAccountConfig)
 
         project.android.defaultConfig.ext.playAccountConfig = null
 
@@ -34,7 +34,7 @@ class PlayPublisherPlugin implements Plugin<Project> {
             }
 
             def flavorAccountConfig = variant.productFlavors.find { it.playAccountConfig }?.playAccountConfig
-            def defaultAccountConfig = android.defaultConfig.ext.playAccountConfig
+            def defaultAccountConfig = project.android.defaultConfig.ext?.playAccountConfig ?: project.ext.playAccountConfig
             def playAccountConfig = flavorAccountConfig ?: defaultAccountConfig
 
             def bootstrapTaskName = "bootstrap${variant.name.capitalize()}PlayResources"
